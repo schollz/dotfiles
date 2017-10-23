@@ -34,6 +34,6 @@ filetype plugin on       " may already be in your .vimrc
 let g:pencil#autoformat = 1      " 0=disable, 1=enable (def)
 augroup pencil
         autocmd!
-        autocmd FileType markdown,mkd call pencil#init()
+        autocmd FileType markdown,mkd,md call pencil#init({'wrap': 'hard', 'autoformat': 1})
         autocmd FileType text         call pencil#init()
 augroup END
