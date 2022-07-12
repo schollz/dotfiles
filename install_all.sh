@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install -y zsh vim htop pv git python3-pip
+sudo apt install -y zsh vim htop pv git python3-pip cmake 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 ## vim
@@ -22,6 +22,9 @@ mkdir -p ~/go/src/github.com/schollz
 
 ## install croc
 curl https://getcroc.schollz.com | bash
+
+## install lua
+./install_lua.sh
 
 ## update python
 sudo -H python3 -m pip install --upgrade pip
