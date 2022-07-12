@@ -1,0 +1,22 @@
+#!/bin/bash
+
+sudo apt install -y zsh vim htop pv git python3-pip
+
+## vim
+git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
+mkdir -p ~/.vim/colors
+curl https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim > ~/.vim/colors/molokai.vim
+curl https://raw.githubusercontent.com/schollz/dotfiles/main/vimrc > ~/.vimrc
+
+## better ls colors
+curl https://raw.githubusercontent.com/schollz/dotfiles/main/dircolors.monokai > /tmp/dircolors.monokai
+dircolors /tmp/dircolors.monokai >> ~/.zshrc
+
+## install go
+./golang
+mkdir -p ~/go/src/github.com/schollz
+echo "export GOPATH=~/go" >> ~/.zshrc
+
+## update python
+sudo -H python3 -m pip install --upgrade pip
+sudo -H python3 -m pip install tqdm numpy
