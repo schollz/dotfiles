@@ -67,6 +67,9 @@ let g:go_highlight_generate_tags = 1
 set autoread
 autocmd BufWritePost *.lua silent! !python3 ~/.config/lua-format.py <afile>
 autocmd BufWritePost *.lua redraw!
-
 autocmd BufWritePost *.c silent! !clang-format -i --style=google <afile>
 autocmd BufWritePost *.c redraw!
+autocmd BufWritePost *.h silent! !clang-format -i --style=google <afile>
+autocmd BufWritePost *.h redraw!
+autocmd BufWritePost *.cpp silent! !clang-format -i --style=google <afile>
+autocmd BufWritePost *.cpp redraw!
