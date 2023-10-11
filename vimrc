@@ -73,3 +73,7 @@ autocmd BufWritePost *.h silent! !clang-format -i --style=google <afile>
 autocmd BufWritePost *.h redraw!
 autocmd BufWritePost *.cpp silent! !clang-format -i --style=google <afile>
 autocmd BufWritePost *.cpp redraw!
+
+" ctrl + l/r moves tabs
+nnoremap <C-Left> :tabprevious<CR>
+nnoremap <C-Right> :tabnext<CR>
