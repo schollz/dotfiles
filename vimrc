@@ -77,3 +77,6 @@ autocmd BufWritePost *.cpp redraw!
 " ctrl + l/r moves tabs
 nnoremap <C-Left> :tabprevious<CR>
 nnoremap <C-Right> :tabnext<CR>
+
+let g:vim_markdown_folding_disabled = 1
+

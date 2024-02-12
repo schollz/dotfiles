@@ -12,3 +12,6 @@ dircolors /tmp/dircolors.monokai >> ~/.zshrc
 
 ## lua stuff
 curl https://raw.githubusercontent.com/schollz/LuaFormat/master/lua-format.py >  ~/.config/lua-format.py
+
+## markdown stuff
+cd ~/.vim && wget https://github.com/preservim/vim-markdown/archive/master.tar.gz && tar --strip=1 -zxf master.tar.gz && rm -rf master.tar.gz
