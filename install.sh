@@ -40,6 +40,8 @@ curl -s https://getcroc.schollz.com | bash
 curl -s https://gettorrenter.schollz.com | bash
 
 # install node 
+zsh 
+source ~/.zshrc
 if [ ! -f ~/.nvm/nvm.sh ]; then
     curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
     nvm install 22
