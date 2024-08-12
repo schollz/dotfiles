@@ -7,7 +7,7 @@ sudo apt install -y zsh vim git clang-format wget curl python3
 # check if .zshrc does not exist
 if [ ! -f ~/.zshrc ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-    curl https://raw.githubusercontent.com/schollz/dotfiles/master/zshrc > ~/.zshrc
+    curl https://dotfiles.schollz.com/zshrc > ~/.zshrc
 fi
 zsh 
 source ~/.zshrc
@@ -23,8 +23,8 @@ if [ ! -f ~/.vimrc ]; then
     mkdir -p ~/.vim/pack/plugins/start
     git clone --depth 1 https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
     mkdir -p ~/.vim/colors
-    curl -s https://raw.githubusercontent.com/schollz/dotfiles/main/dircolors.monokai > ~/.vim/colors/molokai.vim
-    curl -s https://raw.githubusercontent.com/schollz/dotfiles/master/vimrc > ~/.vimrc
+    curl -s https://dotfiles.schollz.com/dircolors.monokai > ~/.vim/colors/molokai.vim
+    curl -s https://dotfiles.schollz.com/vimrc > ~/.vimrc
     ## markdown stuff
     cd ~/.vim && wget -q https://github.com/preservim/vim-markdown/archive/master.tar.gz && tar --strip=1 -zxf master.tar.gz && rm -rf master.tar.gz
     cd ~
