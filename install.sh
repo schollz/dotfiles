@@ -42,9 +42,9 @@ curl -s https://gettorrenter.schollz.com | bash
 # install node 
 if [ ! -f ~/.nvm/nvm.sh ]; then
     curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-    source ~/.zshrc
     nvm install 22
 fi
+source ~/.zshrc
 node -v
 npm -v
 
