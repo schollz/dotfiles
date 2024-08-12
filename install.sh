@@ -1,25 +1,27 @@
 #!/bin/bash
 
 sudo apt update -qq
-sudo apt install -y -qq zsh vim git clang-format wget curl python3
+sudo apt install -y zsh vim git clang-format wget curl python3
 
 # add zsrhc
 # check if .zshrc does not exist
 if [ ! -f ~/.zshrc ]; then
+    echo "installing zsh"
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
     curl https://dotfiles.schollz.com/zshrc > ~/.zshrc
+    curl https://dotfiles.schollz.com/zshrc > ~/.bashrc
 fi
-zsh 
-source ~/.zshrc
 
 # add lua support
 if [ ! -f ~/.config/lua-format.py ]; then
+    echo "installing lua support"
     mkdir -p ~/.config
     curl -s https://raw.githubusercontent.com/schollz/LuaFormat/master/lua-format.py >  ~/.config/lua-format.py
 fi
 
 # improve vim
 if [ ! -f ~/.vimrc ]; then
+    echo "installing vim"
     mkdir -p ~/.vim/pack/plugins/start
     git clone --depth 1 https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
     mkdir -p ~/.vim/colors
@@ -40,8 +42,7 @@ curl -s https://getcroc.schollz.com | bash
 curl -s https://gettorrenter.schollz.com | bash
 
 # install node 
-zsh 
-source ~/.zshrc
+echo "installing node"
 if [ ! -f ~/.nvm/nvm.sh ]; then
     curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
     source ~/.zshrc
