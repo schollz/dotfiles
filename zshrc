@@ -11,3 +11,4 @@ alias share='f() { curl --progress-bar --upload-file "$1" https://share.schollz.
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+alias gcap='function _gcam_push() { git pull && git commit -am "$1" && git push; }; _gcam_push'
