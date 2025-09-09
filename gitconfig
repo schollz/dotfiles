@@ -1,0 +1,58 @@
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[alias]
+  gcp = !git commit -am \"$1\" && git push
+  gcap = !git commit -am \"$1\" && git push
+	pr = "!bash -c 'f(){ set -eu;   git rev-parse --is-inside-work-tree >/dev/null;   base=\"$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || true)\";   base=\"$(basename \"$base\")\";   [ -z \"$base\" ] && base=main;   if [ \"$#\" -gt 0 ]; then msg=\"$*\"; else msg=\"chore: quick PR $(date -u +\"%Y-%m-%d %H:%M:%S UTC\")\"; fi;   rand=\"$(date +%Y%m%d-%H%M%S)-${USER:-u}-$( (command -v openssl >/dev/null && openssl rand -hex 3) || printf \"%04d\" $RANDOM)\";   branch=\"pr/$rand\";   git fetch origin \"$base\" >/dev/null 2>&1 || true;   git switch -c \"$branch\";   git add -A;   git commit -m \"$msg\" --allow-empty;   git push -u origin \"$branch\";   title=\"$(git log -1 --pretty=%s)\";   body=\"$(git log -1 --pretty=%b)\";   if ! command -v gh >/dev/null; then printf \"%s\\n\" \"gh CLI not found. Install from https://cli.github.com and run gh auth login.\" >&2; exit 1; fi;   gh pr create --head \"$branch\" --base \"$base\" --title \"$title\" --body \"$body\";   gh pr merge --squash --delete-branch --subject \"$title\" --body \"$body\";   git switch \"$base\";   git pull --ff-only; }; f \"$@\"' -"
+
+
+[fetch]
+	prune = true
+[diff]
+	colorMoved = zebra
+
+[column]
+        ui = auto
+[branch]
+        sort = -committerdate
+[tag]
+        sort = version:refname
+[init]
+        defaultBranch = main
+[diff]
+        algorithm = histogram
+        colorMoved = plain
+        mnemonicPrefix = true
+        renames = true
+[push]
+        default = simple
+        autoSetupRemote = true
+        followTags = true
+[fetch]
+        prune = true
+        pruneTags = true
+        all = true
+
+# why the hell not?
+
+[help]
+        autocorrect = prompt
+[commit]
+        verbose = true
+[rerere]
+        enabled = true
+        autoupdate = true
+[core]
+        excludesfile = ~/.gitignore
+        editor = vim
+[rebase]
+        autoSquash = true
+        autoStash = true
+        updateRefs = true
