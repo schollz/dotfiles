@@ -1,0 +1,22 @@
+{
+	"bootstrapped": true,
+	"channels":[
+		"https://packages.sublimetext.io/channel.json",
+		"https://packagecontrol.github.io/channel/channel_v4.json"
+	],
+	"installed_packages":
+	[
+		"BracketHighlighter",
+		"Clang Format",
+		"Claudette",
+		"JsPrettier",
+		"LSP",
+		"LSP-gopls",
+		"Package Control",
+		"python-black",
+	],
+	"in_process_packages":
+	[
+	],
+}
+

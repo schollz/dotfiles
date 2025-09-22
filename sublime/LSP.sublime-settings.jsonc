@@ -1,0 +1,34 @@
+{
+    "clients": {        
+        // Go - gopls
+        "gopls": {
+            "enabled": true,
+            "command": ["gopls"],
+            "selector": "source.go"
+        },
+        
+    },
+    
+    // Global LSP settings
+    "lsp_format_on_save": true,
+    "lsp_code_actions_on_save": {
+        "source.organizeImports": true,
+        "source.fixAll": false
+    },
+    
+    // Show diagnostics
+    "show_diagnostics_count_in_view_status": true,
+    "show_diagnostics_in_view_status": true,
+    "show_diagnostics_severity_level": 3,
+    
+    // Auto complete settings
+    "auto_complete_selector": "source | text",
+    "inhibit_sublime_completions": true,
+    "inhibit_word_completions": true,
+    
+    // UI preferences
+    "log_debug": true,
+    "log_server": true,
+    "log_stderr": true,
+    "log_payloads": false
+}

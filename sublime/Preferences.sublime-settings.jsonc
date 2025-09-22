@@ -1,0 +1,52 @@
+{
+	"ignored_packages":[
+		"Vintage",
+  ],
+
+  "auto_format_on_save": true,
+  "allow_inline_formatting": true,
+	"index_files": true,
+  "format_on_save":true,
+  "lsp_format_on_save": true,
+  // UI / Appearance
+  "theme": "Adaptive.sublime-theme",
+  "font_face": "Monaspace Neon",
+  "font_size": 13,
+  "line_padding_top": 2,
+  "line_padding_bottom": 2,
+  "highlight_line": true,
+  "highlight_modified_tabs": true,
+  "show_encoding": true,
+  "show_line_endings": true,
+  "always_show_minimap_viewport": true,
+  "draw_white_space": "selection", // or "all" if you want to see spaces everywhere
+  "caret_style": "phase",
+  "scroll_past_end": true,
+  "overlay_scroll_bars": "enabled",
+
+  // Editing
+  "tab_size": 4,
+  "translate_tabs_to_spaces": true,
+  "detect_indentation": true,
+  "trim_trailing_white_space_on_save": true,
+  "ensure_newline_at_eof_on_save": true,
+  "word_wrap": false,
+  "auto_complete": true,
+  "auto_complete_commit_on_tab": true,
+  "auto_match_enabled": true,
+  "spell_check": false,
+
+  // Performance
+  "gpu_window_buffer": true,
+  "hot_exit": false,
+  "remember_open_files": true,
+  "update_check": true,
+
+  // Git / Version Control
+  "show_git_status": true,
+  "git_diff_target": "index",
+
+  // Color scheme
+  "color_scheme": "Monokai.sublime-color-scheme",
+}
+
