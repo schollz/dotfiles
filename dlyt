@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: ~/dlyt <youtube-id-or-url>" >&2
+  exit 1
+fi
+
+x="$1"
+if [[ "$x" =~ ^https?:// ]]; then
+  target="$x"
+else
+  target="https://www.youtube.com/watch?v=${x}"
+fi
+
+exec yt-dlp \
+  --cookies-from-browser firefox \
+  --remote-components ejs:github \
+  -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' \
+  "$target"
