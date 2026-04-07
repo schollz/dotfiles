@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 2 || $# -gt 3 ]]; then
+  echo "Usage: ~/dlyt <youtube-id-or-url> <output-filename> [start_trim:end_trim]" >&2
+  exit 1
+fi
+
+x="$1"
+outfile="$2"
+trim_spec="${3:-}"
+
+# normalize URL
+if [[ "$x" =~ ^https?:// ]]; then
+  target="$x"
+else
+  target="https://www.youtube.com/watch?v=${x}"
+fi
+
+# temp file base
+tmp="$(mktemp -u /tmp/dlyt.XXXXXX)"
+
+# cleanup
+trap 'rm -f ${tmp}.* "${wavfile:-}"' EXIT
+
+# download best audio only
+yt-dlp \
+  --cookies-from-browser firefox \
+  --remote-components ejs:github \
+  -f 'bestaudio' \
+  -o "${tmp}.%(ext)s" \
+  "$target"
+
+# locate downloaded file
+infile="$(ls ${tmp}.*)"
+
+# convert to wav for processing
+wavfile="${tmp}.wav"
+ffmpeg -y -i "$infile" -vn -acodec pcm_s16le -ar 44100 -ac 2 "$wavfile"
+
+# ensure .mp3 extension
+if [[ "$outfile" != *.mp3 ]]; then
+  outfile="${outfile}.mp3"
+fi
+
+# base effects
+effects=(
+  remix -           # mono
+  highpass 100
+  compand 0.3,1 6:-70,-60,-20 -5 -90 0.2
+)
+
+# prefix/suffix trimming (start:end)
+if [[ -n "$trim_spec" ]]; then
+  if [[ "$trim_spec" =~ ^([0-9]+):([0-9]+)$ ]]; then
+    start_trim="${BASH_REMATCH[1]}"
+    end_trim="${BASH_REMATCH[2]}"
+
+    effects+=(
+      reverse
+      trim "$end_trim"
+      reverse
+      trim "$start_trim"
+    )
+  else
+    echo "Invalid trim format. Use start_trim:end_trim (seconds)" >&2
+    exit 1
+  fi
+fi
+
+# final normalization
+effects+=(
+  norm
+)
+
+# run sox → MP3 output
+sox "$wavfile" -C 192 "$outfile" "${effects[@]}"
+
+echo "Saved: $outfile"
