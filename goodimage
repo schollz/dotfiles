@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: goodimage <image> [image ...]" >&2
+}
+
+err() {
+  echo "goodimage: $*" >&2
+}
+
+filesize() {
+  wc -c < "$1" | tr -d '[:space:]'
+}
+
+human_bytes() {
+  awk -v bytes="$1" 'BEGIN {
+    split("B KB MB GB", units, " ")
+    size = bytes
+    unit = 1
+    while (size >= 1024 && unit < 4) {
+      size /= 1024
+      unit++
+    }
+    if (unit == 1) {
+      printf "%d %s", size, units[unit]
+    } else {
+      printf "%.1f %s", size, units[unit]
+    }
+  }'
+}
+
+percent_saved() {
+  awk -v before="$1" -v after="$2" 'BEGIN {
+    if (before <= 0) {
+      printf "0.0"
+    } else {
+      printf "%.1f", ((before - after) / before) * 100
+    }
+  }'
+}
+
+preserve_permissions() {
+  local source="$1"
+  local target="$2"
+
+  if chmod --reference="$source" "$target" 2>/dev/null; then
+    return
+  fi
+
+  local mode
+  mode="$(stat -f '%Lp' "$source" 2>/dev/null || true)"
+  if [[ -n "$mode" ]]; then
+    chmod "$mode" "$target"
+  fi
+}
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 1
+fi
+
+im_cmd=()
+if command -v magick >/dev/null 2>&1; then
+  im_cmd=(magick)
+elif command -v convert >/dev/null 2>&1; then
+  im_cmd=(convert)
+else
+  err "ImageMagick not found. Install ImageMagick so 'magick' or 'convert' is available."
+  exit 1
+fi
+
+status=0
+
+for infile in "$@"; do
+  if [[ ! -e "$infile" ]]; then
+    err "$infile: file does not exist"
+    status=1
+    continue
+  fi
+
+  if [[ -d "$infile" ]]; then
+    err "$infile: is a directory"
+    status=1
+    continue
+  fi
+
+  if [[ ! -f "$infile" ]]; then
+    err "$infile: is not a regular file"
+    status=1
+    continue
+  fi
+
+  dir="$(dirname -- "$infile")"
+  base="$(basename -- "$infile")"
+  ext="${base##*.}"
+  lower_ext="$(printf '%s' "$ext" | tr '[:upper:]' '[:lower:]')"
+
+  if [[ "$base" == "$ext" ]]; then
+    tmp="$(mktemp "${dir}/.${base}.goodimage.XXXXXX")"
+  else
+    tmp="$(mktemp "${dir}/.${base}.goodimage.XXXXXX.${ext}")"
+  fi
+
+  before="$(filesize "$infile")"
+
+  common_opts=(
+    -auto-orient
+    -strip
+    -resize '1600x1600>'
+    -density 72
+    -units PixelsPerInch
+    -colorspace sRGB
+  )
+
+  format_opts=()
+  case "$lower_ext" in
+    jpg|jpeg)
+      format_opts=(
+        -sampling-factor 4:2:0
+        -interlace Plane
+        -quality 82
+      )
+      ;;
+    png)
+      format_opts=(
+        -define png:compression-level=9
+        -define png:compression-strategy=1
+      )
+      ;;
+    webp)
+      format_opts=(-quality 82)
+      ;;
+  esac
+
+  if ! "${im_cmd[@]}" "$infile" "${common_opts[@]}" "${format_opts[@]}" "$tmp"; then
+    rm -f -- "$tmp"
+    err "$infile: conversion failed"
+    status=1
+    continue
+  fi
+
+  preserve_permissions "$infile" "$tmp"
+  mv -f -- "$tmp" "$infile"
+
+  after="$(filesize "$infile")"
+  saved="$(percent_saved "$before" "$after")"
+  echo "$infile: $(human_bytes "$before") -> $(human_bytes "$after") (${saved}% saved)"
+done
+
+exit "$status"
