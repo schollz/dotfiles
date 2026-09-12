@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 4 ]]; then
+  echo "Usage: ~/dlaudio2 <youtube-id-or-url> <output-filename> <start-M:SS> <end-M:SS>" >&2
+  echo "Example: ~/dlaudio2 VIDEO_ID song.mp3 1:30 3:30" >&2
+  exit 1
+fi
+
+x="$1"
+outfile="$2"
+start_time="$3"
+end_time="$4"
+
+time_pattern='^[0-9]+:[0-5][0-9]([.][0-9]+)?$'
+if [[ ! "$start_time" =~ $time_pattern || ! "$end_time" =~ $time_pattern ]]; then
+  echo "Invalid time. Use minutes:seconds, for example 1:30 or 3:30.5." >&2
+  exit 1
+fi
+
+# Normalize the input to a YouTube URL when only a video ID is supplied.
+if [[ "$x" =~ ^https?:// ]]; then
+  target="$x"
+else
+  target="https://www.youtube.com/watch?v=${x}"
+fi
+
+tmpdir="$(mktemp -d /tmp/dlaudio2.XXXXXX)"
+trap 'rm -f -- "$tmpdir"/*; rmdir -- "$tmpdir"' EXIT
+
+yt-dlp \
+  --cookies-from-browser firefox \
+  --remote-components ejs:github \
+  -f 'bestaudio' \
+  -o "${tmpdir}/source.%(ext)s" \
+  "$target"
+
+infile="$(find "$tmpdir" -maxdepth 1 -type f ! -name '*.part' -print -quit)"
+if [[ -z "$infile" ]]; then
+  echo "Downloaded audio file was not found." >&2
+  exit 1
+fi
+
+# Decode to 24-bit stereo without changing the source sample rate.
+wavfile="${tmpdir}/source.wav"
+ffmpeg -y -i "$infile" -vn -acodec pcm_s24le -ac 2 "$wavfile"
+
+if [[ "$outfile" != *.mp3 ]]; then
+  outfile="${outfile}.mp3"
+fi
+
+# Keep only the requested absolute time range, then peak-normalize it.
+sox "$wavfile" -C 256 "$outfile" \
+  trim "$start_time" "=$end_time" \
+  norm
+
+echo "Saved: $outfile (${start_time} to ${end_time})"

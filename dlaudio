@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 2 || $# -gt 3 ]]; then
-  echo "Usage: ~/dlyt <youtube-id-or-url> <output-filename> [start_trim:end_trim]" >&2
+  echo "Usage: ~/dlaudio <youtube-id-or-url> <output-filename> [start_trim:end_trim]" >&2
   exit 1
 fi
 
@@ -34,21 +34,18 @@ yt-dlp \
 # locate downloaded file
 infile="$(ls ${tmp}.*)"
 
-# convert to wav for processing
+# convert to 24-bit stereo WAV for lossless processing
 wavfile="${tmp}.wav"
-ffmpeg -y -i "$infile" -vn -acodec pcm_s16le -ar 44100 -ac 2 "$wavfile"
+ffmpeg -y -i "$infile" -vn -acodec pcm_s24le -ac 2 "$wavfile"
 
 # ensure .mp3 extension
 if [[ "$outfile" != *.mp3 ]]; then
   outfile="${outfile}.mp3"
 fi
 
-# base effects
-effects=(
-  remix -           # mono
-  highpass 100
-  compand 0.3,1 6:-70,-60,-20 -5 -90 0.2
-)
+# Optional trimming is followed by peak normalization. No other audio effects
+# are applied, so the stereo image and frequency content are retained.
+effects=()
 
 # prefix/suffix trimming (start:end)
 if [[ -n "$trim_spec" ]]; then
@@ -73,7 +70,7 @@ effects+=(
   norm
 )
 
-# run sox → MP3 output
-sox "$wavfile" -C 192 "$outfile" "${effects[@]}"
+# run sox → 256 kbps MP3 output
+sox "$wavfile" -C 256 "$outfile" "${effects[@]}"
 
 echo "Saved: $outfile"
